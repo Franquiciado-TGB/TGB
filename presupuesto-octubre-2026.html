@@ -1,0 +1,368 @@
+<title>Presupuesto TGB octubre 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: hoja de presupuesto — barra de supuestos arriba, cuenta por local, escenarios, compras al objetivo, ventas por familia y método */
+:root{
+  --bg:#f3f4f2; --surface:#fcfcfb; --surface-2:#eef0ed; --fg:#141816; --fg-2:#4f5752; --muted:#848b86;
+  --line:#dde1dc; --axis:#c2c7c1; --accent:#1f4d43; --accent-soft:#dbe8e3; --input:#fffdf3; --input-line:#d9cf9c;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --good:#0ca30c; --good-ink:#006300; --bad:#d03b3b; --bad-ink:#b02a2a; --warn-bg:#fdf3dc; --warn-ink:#7a5300;
+  --f-display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1211; --surface:#1a1d1b; --surface-2:#232725; --fg:#f2f4f2; --fg-2:#bcc3bd; --muted:#8a918b;
+  --line:#2b302d; --axis:#3a403c; --accent:#8fd1bd; --accent-soft:#1f332d; --input:#26261c; --input-line:#5c5530;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --good-ink:#0ca30c; --bad-ink:#e66767; --warn-bg:#3a3120; --warn-ink:#f1c76a; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0f1211; --surface:#1a1d1b; --surface-2:#232725; --fg:#f2f4f2; --fg-2:#bcc3bd; --muted:#8a918b;
+  --line:#2b302d; --axis:#3a403c; --accent:#8fd1bd; --accent-soft:#1f332d; --input:#26261c; --input-line:#5c5530;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --good-ink:#0ca30c; --bad-ink:#e66767; --warn-bg:#3a3120; --warn-ink:#f1c76a; color-scheme:dark; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--f-body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 56px;display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 4px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,4vw,38px);line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.lede{color:var(--fg-2);margin:6px 0 0;max-width:68ch;font-size:14.5px}
+h2{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0;letter-spacing:-.005em;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px;margin:2px 0 0;max-width:80ch}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.ctl{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--fg-2);font-weight:600}
+.ctl input[type=range]{width:150px;accent-color:var(--accent)}
+.ctl output{font-variant-numeric:tabular-nums;font-weight:700;color:var(--fg);min-width:52px;font-size:15px}
+.btn{font:600 13px var(--f-body);background:var(--surface-2);color:var(--fg-2);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover{color:var(--fg)}
+.btn:focus-visible,input:focus-visible,.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .lab{font-size:12px;color:var(--fg-2);font-weight:600}
+.kpi .val{font-family:var(--f-display);font-size:28px;font-weight:700;line-height:1.15}
+.kpi .foot{font-size:12.5px;color:var(--muted)}
+.neg{color:var(--bad-ink)} .pos{color:var(--good-ink)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums;background:var(--surface)}
+th,td{padding:8px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-2);font-weight:600;background:var(--surface-2)}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit;z-index:1}
+tbody tr{background:var(--surface)}
+tr.tot td{font-weight:700;background:var(--surface-2);border-top:2px solid var(--axis)}
+tr.ben td{font-weight:700;font-size:14.5px;background:var(--accent-soft)}
+tr.sep td{border-top:2px solid var(--axis)}
+tr.base td{background:var(--accent-soft);font-weight:700}
+td.pct,span.pct{color:var(--muted);font-size:12px}
+td.lab2{color:var(--fg-2)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:baseline}
+input.num{font:500 13.5px var(--f-body);font-variant-numeric:tabular-nums;width:92px;text-align:right;background:var(--input);color:var(--fg);border:1px solid var(--input-line);border-radius:6px;padding:4px 6px}
+.legend-in{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--fg-2)}
+.legend-in i{width:14px;height:14px;border-radius:4px;background:var(--input);border:1px solid var(--input-line);display:inline-block}
+
+.tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--surface-2);padding:4px;border-radius:10px;width:max-content;max-width:100%}
+.tabs button{font:600 13px var(--f-body);color:var(--fg-2);background:transparent;border:0;border-radius:7px;padding:7px 12px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.tabs button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.flex{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+
+.benbar{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.benbar .trk{width:120px;height:10px;position:relative;background:var(--surface-2);border-radius:3px}
+.benbar .trk i{position:absolute;top:0;height:100%;border-radius:3px}
+.benbar .trk b{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--axis)}
+
+.callout{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:10px 14px;font-size:13.5px;max-width:90ch}
+.callout b{color:inherit}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.mini{display:flex;flex-direction:column;gap:6px;min-width:0}
+.mini h3{font-size:14px;margin:0;font-weight:700}
+.bridge{display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.bridge .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.bridge .seg{height:12px;border-radius:3px;background:var(--axis)}
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;max-width:78ch}
+ol.steps li{padding-left:4px}
+ol.steps b{font-weight:700}
+.note{font-size:12.5px;color:var(--muted);margin:0;max-width:90ch}
+ul.notes{margin:0;padding-left:18px;color:var(--fg-2);font-size:13.5px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">TGB Antiguo · Zurriola · Ballonti · Presupuesto mensual</p>
+    <h1>Octubre 2026</h1>
+    <p class="lede">Cuenta prevista de cada TGB si facturamos un 5 % más que en octubre de 2025 y la mercadería se queda en el 31 %. Mueve los dos controles para ver otros escenarios; las casillas amarillas se pueden editar.</p>
+  </header>
+
+  <div class="bar" role="group" aria-label="Supuestos">
+    <label class="ctl" for="g">Ventas sobre oct. 2025
+      <input type="range" id="g" min="-15" max="25" step="1" value="5">
+      <output id="g-o" for="g">+5 %</output></label>
+    <label class="ctl" for="m">Objetivo mercadería
+      <input type="range" id="m" min="26" max="36" step="0.5" value="31">
+      <output id="m-o" for="m">31 %</output></label>
+    <button class="btn" type="button" id="reset">Volver a +5 % y 31 %</button>
+  </div>
+
+  <section class="kpis" id="kpis" aria-label="Resumen del grupo"></section>
+
+  <section class="card">
+    <div class="flex">
+      <div><h2>Cuenta prevista de octubre por TGB</h2><p class="sub">Euros sin IVA. Ventas = octubre 2025 × crecimiento. Mercadería al objetivo. El resto sale de las últimas cuentas de explotación.</p></div>
+      <span class="legend-in"><i></i>Casilla editable</span>
+    </div>
+    <div class="tblwrap"><table id="t-pl"></table></div>
+    <p class="note" id="pl-note"></p>
+  </section>
+
+  <section class="card">
+    <div class="flex">
+      <div><h2>Escenarios de facturación</h2><p class="sub">Qué pasa con el beneficio según lo que facturemos, con la mercadería siempre al objetivo y el resto de costes como en la cuenta de arriba.</p></div>
+      <nav class="tabs" id="tabs-esc" aria-label="Local de los escenarios"></nav>
+    </div>
+    <div class="tblwrap"><table id="t-esc"></table></div>
+    <p class="note" id="esc-note"></p>
+  </section>
+
+  <section class="card">
+    <div class="flex">
+      <div><h2 id="h-comp">Mercadería al 31 %: cuánto se puede comprar</h2><p class="sub">Límite de compras de comida y bebida por proveedor y semana, repartido como se compró en septiembre. El packaging y la limpieza van en gastos generales, no aquí.</p></div>
+      <nav class="tabs" id="tabs-comp" aria-label="Local de compras"></nav>
+    </div>
+    <div class="grid2">
+      <div class="mini">
+        <h3 id="bridge-t">De la receta al objetivo</h3>
+        <div class="bridge" id="bridge"></div>
+        <p class="note" id="bridge-n"></p>
+      </div>
+      <div class="mini" style="min-width:0">
+        <h3>Límite por proveedor y semana</h3>
+        <div class="tblwrap"><table id="t-comp"></table></div>
+      </div>
+    </div>
+    <div class="callout" id="comp-call" hidden></div>
+  </section>
+
+  <section class="card">
+    <div><h2>Lo que hay que vender por familia</h2><p class="sub">Reparto de la venta presupuestada de cada TGB según la mezcla por familias de la semana de Pascua 2026 (lo último que tenemos por familia). Sirve de guía para los encargados; las promociones del jueves 2x1 restan.</p></div>
+    <div class="tblwrap"><table id="t-fam"></table></div>
+    <p class="note">Si me pasas el informe de Codisys por familias de octubre 2025, afino el reparto con el mes completo en lugar de una semana.</p>
+  </section>
+
+  <section class="card">
+    <div><h2>Cómo hacer el presupuesto cada mes</h2><p class="sub">El mismo método que he seguido aquí, para repetirlo a final de cada mes en media hora.</p></div>
+    <ol class="steps">
+      <li><b>Fija la venta.</b> Venta del mismo mes del año anterior (Codisys, sin IVA) por el crecimiento que te pongas. Compárala con la del mes anterior: si octubre 2025 +5 % queda por debajo de septiembre 2026, el objetivo es fácil; si queda por encima, es exigente.</li>
+      <li><b>Pon la mercadería como porcentaje.</b> 31 % de la venta es el tope de consumo. En los TGB la receta da entre el 26,4 % y el 27,9 %, así que el 31 % deja unos 3–4,5 puntos para aceite, comida de personal y merma. Si un local pasa de ahí, no es el menú, es compra de más o stock.</li>
+      <li><b>Convierte la mercadería en límites de compra.</b> Repártela por proveedor según lo que se compró el mes anterior y luego por semanas (según los días de cada semana). Resta el stock que haya de más en cámara, como este mes en Ballonti.</li>
+      <li><b>Cierra el personal con el cuadrante, no con la nómina del mes pasado.</b> Es el coste que más se puede mover en octubre y noviembre: compara el cuadrante previsto con el punto de equilibrio de cada local antes de cerrar turnos.</li>
+      <li><b>Copia los fijos de la última cuenta.</b> Alquiler, gastos generales, suministros y cuotas. Delivery como porcentaje de la venta, porque va con las comisiones de Glovo y Just Eat.</li>
+      <li><b>Revisa cada lunes.</b> Venta acumulada contra presupuesto y compras de la semana contra su límite. Si la venta va por debajo, baja el pedido de la semana siguiente en la misma proporción.</li>
+      <li><b>Cierra el mes con inventario.</b> Sin inventario inicial y final no hay mercadería real. Un recuento el último día de hamburguesa, pan, patata, pulled pork, quesos, bacon y cerveza basta.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Supuestos y de dónde salen los datos</h2>
+    <ul class="notes">
+      <li><b>Ventas de octubre 2025 sin IVA:</b> Antiguo 49.681 €, Zurriola 47.131 € y Ballonti 36.995 € (informe de ventas diarias de Codisys).</li>
+      <li><b>Personal:</b> nómina real de septiembre 2026 de cada local (en Antiguo incluye tu 50 % y el 50 % de Montse).</li>
+      <li><b>Gastos generales, ocupación y cuotas:</b> cuenta de septiembre 2026. En Ballonti la ocupación va sin la concesión de −1.088 €, que en septiembre no aparece.</li>
+      <li><b>Suministros:</b> Ballonti, el de septiembre. En Antiguo (septiembre a 0) y Zurriola (septiembre incompleto, luz y gas pendientes) he puesto 3.000 € y 2.400 €, en línea con los meses sin calor.</li>
+      <li><b>Delivery:</b> comisión de septiembre como % de la venta: Antiguo 4,7 %, Zurriola 4,8 %, Ballonti 6,1 %.</li>
+      <li><b>Royalties:</b> 0 % por el acuerdo con Restalia.</li>
+      <li><b>Receta (coste teórico) de septiembre:</b> Antiguo 27,9 %, Zurriola 26,4 %, Ballonti 27,7 %, con el precio de la hamburguesa corregido.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const OCT_DAYS = 31;
+const WEEKS = [['Sem. 1','1–4 oct',4],['Sem. 2','5–11 oct',7],['Sem. 3','12–18 oct',7],['Sem. 4','19–25 oct',7],['Sem. 5','26–31 oct',6]];
+const LOCS = [
+ {id:'zurriola', name:'TGB Zurriola', slot:'--s2', oct25:47131, sep26:55133,
+  c:{pers:19106, gg:3364, sum:2400, ocup:7700, otros:56}, delivPct:.048, delivFix:0, teor:26.4,
+  prov:[['Logirest · producto','Montse',12584.88],['Verdura (Bidfood)','Montse',1100.62],['Leche (Easo)','Montse',170.74],['Heineken','Montse',1029.63],['Coca-Cola (factura)','Montse',1836.58]], ext:{aceite:1.5}},
+ {id:'antiguo', name:'TGB Antiguo', slot:'--s3', oct25:49681, sep26:50457,
+  c:{pers:16509, gg:3037, sum:3000, ocup:4697, otros:45}, delivPct:.047, delivFix:0, teor:27.9,
+  prov:[['Logirest · producto','Montse',13641.87],['Verdura (Bidfood)','Vero',953.99],['Leche (Easo)','Vero',362.67],['Heineken','Vero',1199.32],['Coca-Cola (factura)','Vero',2471.42]], ext:{aceite:1.2}},
+ {id:'ballonti', name:'TGB Ballonti', slot:'--s4', oct25:36995, sep26:35365,
+  c:{pers:12374, gg:2762, sum:2247, ocup:7294, otros:90}, delivPct:.061, delivFix:0, teor:27.7,
+  prov:[['Logirest · producto','Montse',11263.68],['Verdura (Euskopan)','Glen',809.65],['Leche (Euskodis)','Glen',236.08],['Heineken','Glen',1083.02],['Coca-Cola (factura)','Glen',1520.60]], ext:{aceite:1.6},
+  stock:{0:2700, 3:400}},
+];
+const DEF = JSON.parse(JSON.stringify(LOCS.map(l=>l.c)));
+const FAMS = {
+  zurriola:{'Hamburguesas':38.78,'Menús':36.61,'Aperitivos':16.44,'Bebidas':7.83,'Extras':2.48,'Hot dogs y ensaladas':4.23,'Postres y helados':1.28,'Otros':.18,'Promociones (2x1)':-7.93},
+  antiguo:{'Hamburguesas':39.35,'Menús':35.65,'Aperitivos':15.43,'Bebidas':9.43,'Extras':3.82,'Hot dogs y ensaladas':4.12,'Postres y helados':2.28,'Otros':.22,'Promociones (2x1)':-10.27},
+  ballonti:{'Hamburguesas':31.88,'Menús':39.06,'Aperitivos':15.23,'Bebidas':12.43,'Extras':2.10,'Hot dogs y ensaladas':3.25,'Postres y helados':2.25,'Otros':.05,'Promociones (2x1)':-6.30},
+};
+
+let G = 5, M = 31, escSel = 'zurriola', compSel = 'zurriola';
+
+let nf; try { nf = new Intl.NumberFormat('es-ES',{maximumFractionDigits:0,useGrouping:'always'}); nf.format(1234); } catch(e){ nf = new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}); }
+const eur = v => nf.format(Math.round(v)) + ' €';
+const pf = (v,d=1) => v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d}) + ' %';
+const sg = v => (v>0?'+':v<0?'−':'') + Math.abs(v).toLocaleString('es-ES',{maximumFractionDigits:1}) + ' %';
+
+function calc(l, g=G, m=M){
+  const v = l.oct25*(1+g/100), merc = v*m/100, deliv = l.delivFix + v*l.delivPct;
+  const c = l.c, fixed = c.pers+c.gg+c.sum+c.ocup+c.otros+l.delivFix;
+  const ben = v - merc - deliv - c.pers - c.gg - c.sum - c.ocup - c.otros;
+  const be = fixed / (1 - m/100 - l.delivPct);
+  return {v, merc, deliv, ben, be, pers:c.pers, gg:c.gg, sum:c.sum, ocup:c.ocup, otros:c.otros};
+}
+
+/* ---------- KPIs ---------- */
+function renderKpis(){
+  const r = LOCS.map(l=>calc(l));
+  const V = r.reduce((a,b)=>a+b.v,0), Mc = r.reduce((a,b)=>a+b.merc,0), B = r.reduce((a,b)=>a+b.ben,0), P = r.reduce((a,b)=>a+b.pers,0);
+  const O = LOCS.reduce((a,l)=>a+l.oct25,0);
+  const tiles = [
+    {lab:'Venta presupuestada de los TGB', val:eur(V), foot:`${sg(G)} sobre ${eur(O)} de oct. 2025`},
+    {lab:`Mercadería máxima (${pf(M,M%1?1:0)})`, val:eur(Mc), foot:`≈ ${eur(Mc/OCT_DAYS*7)} por semana entre los tres`},
+    {lab:'Personal previsto', val:pf(P/V*100), foot:`${eur(P)} sobre la venta`},
+    {lab:'Beneficio previsto', val:eur(B), cls:B<0?'neg':'pos', foot:`${pf(B/V*100)} de margen`},
+  ];
+  document.getElementById('kpis').innerHTML = tiles.map(k=>`<div class="kpi"><span class="lab">${k.lab}</span><span class="val ${k.cls||''}">${k.val}</span><span class="foot">${k.foot}</span></div>`).join('');
+}
+
+/* ---------- Cuenta prevista ---------- */
+function renderPL(){
+  const R = LOCS.map(l=>calc(l));
+  const tot = k => R.reduce((a,b)=>a+b[k],0);
+  const Vt = tot('v');
+  const head = `<thead><tr><th>Partida</th>${LOCS.map(l=>`<th><span class="dot" style="background:var(${l.slot})"></span>${l.name}</th>`).join('')}<th>Total TGB</th></tr></thead>`;
+  const money = (k, label, editable, cls='') => {
+    let h = `<tr class="${cls}"><td>${label}</td>`;
+    LOCS.forEach((l,i)=>{
+      const v = R[i][k];
+      if(editable) h += `<td><input class="num" type="number" step="50" min="0" id="in-${l.id}-${k}" data-l="${i}" data-k="${k}" value="${Math.round(l.c[k])}" aria-label="${label} ${l.name}"> <span class="pct">${pf(v/R[i].v*100)}</span></td>`;
+      else h += `<td>${eur(v)} <span class="pct">${pf(v/R[i].v*100)}</span></td>`;
+    });
+    return h + `<td>${eur(tot(k))} <span class="pct">${pf(tot(k)/Vt*100)}</span></td></tr>`;
+  };
+  let b = `<tbody>`;
+  b += `<tr><td class="lab2">Ventas oct. 2025</td>${LOCS.map(l=>`<td class="lab2">${eur(l.oct25)}</td>`).join('')}<td class="lab2">${eur(LOCS.reduce((a,l)=>a+l.oct25,0))}</td></tr>`;
+  b += `<tr><td class="lab2">Ventas sep. 2026 (referencia)</td>${LOCS.map(l=>`<td class="lab2">${eur(l.sep26)}</td>`).join('')}<td class="lab2">${eur(LOCS.reduce((a,l)=>a+l.sep26,0))}</td></tr>`;
+  b += `<tr class="tot"><td>Ventas presupuesto</td>${R.map(r=>`<td>${eur(r.v)}</td>`).join('')}<td>${eur(Vt)}</td></tr>`;
+  b += money('merc', `Mercadería (${pf(M,M%1?1:0)})`, false);
+  b += money('pers', 'Personal', true);
+  b += money('gg', 'Gastos generales', true);
+  b += money('sum', 'Suministros', true);
+  b += money('deliv', 'Delivery (comisiones)', false);
+  b += money('ocup', 'Ocupación (alquiler)', true);
+  b += money('otros', 'Cuotas y otros', true);
+  b += `<tr class="ben"><td>Beneficio</td>${R.map(r=>`<td class="${r.ben<0?'neg':''}">${eur(r.ben)} <span class="pct">${pf(r.ben/r.v*100)}</span></td>`).join('')}<td class="${tot('ben')<0?'neg':''}">${eur(tot('ben'))} <span class="pct">${pf(tot('ben')/Vt*100)}</span></td></tr>`;
+  b += `<tr class="sep"><td>Punto de equilibrio</td>${R.map((r,i)=>`<td>${eur(r.be)} <span class="pct">${sg((r.be/LOCS[i].oct25-1)*100)} s/ oct. 25</span></td>`).join('')}<td>${eur(tot('be'))}</td></tr>`;
+  b += `</tbody>`;
+  const t = document.getElementById('t-pl'); t.innerHTML = head + b;
+  t.querySelectorAll('input.num').forEach(inp=>inp.addEventListener('change', e=>{
+    const i = +e.target.dataset.l, k = e.target.dataset.k, v = parseFloat(e.target.value);
+    if(!isNaN(v) && v>=0){ LOCS[i].c[k] = v; }
+    renderAll(e.target.id);
+  }));
+  const neg = LOCS.filter((l,i)=>R[i].ben<0).map(l=>l.name);
+  document.getElementById('pl-note').textContent = neg.length
+    ? `${neg.join(' y ')} ${neg.length>1?'pierden':'pierde'} dinero con esta venta. El personal es lo que más se puede ajustar: mira la columna de punto de equilibrio y el cuadrante de octubre.`
+    : 'Todos los locales ganan dinero con estos supuestos.';
+}
+
+/* ---------- Escenarios ---------- */
+function tabs(el, sel, onPick, list){
+  el.innerHTML = list.map(l=>`<button type="button" data-id="${l.id}" aria-pressed="${l.id===sel}"><span class="dot" style="background:var(${l.slot});margin:0"></span>${l.name}</button>`).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>onPick(b.dataset.id));
+}
+function renderEsc(){
+  tabs(document.getElementById('tabs-esc'), escSel, id=>{escSel=id; renderEsc();}, LOCS);
+  const l = LOCS.find(x=>x.id===escSel);
+  const gs = [...new Set([-10,-5,0,5,10,15,20,G])].sort((a,b)=>a-b);
+  const rows = gs.map(g=>({g, ...calc(l,g)}));
+  const maxAbs = Math.max(...rows.map(r=>Math.abs(r.ben)), 1);
+  let h = `<thead><tr><th>Escenario</th><th>Ventas</th><th>vs sep. 26</th><th>Mercadería</th><th>Compras/semana</th><th>Personal</th><th>Beneficio</th><th>Margen</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const w = Math.abs(r.ben)/maxAbs*50;
+    const bar = `<span class="benbar"><span class="trk"><b></b><i style="${r.ben>=0?`left:50%;width:${w}%;background:var(--good)`:`right:50%;width:${w}%;background:var(--bad)`}"></i></span></span>`;
+    h += `<tr class="${r.g===G?'base':''}"><td>${sg(r.g)} s/ oct. 25${r.g===G?' · presupuesto':''}</td><td>${eur(r.v)}</td><td class="pct">${sg((r.v/l.sep26-1)*100)}</td><td>${eur(r.merc)}</td><td>${eur(r.merc/OCT_DAYS*7)}</td><td>${pf(r.pers/r.v*100)}</td><td class="${r.ben<0?'neg':''}"><span style="display:inline-flex;gap:10px;align-items:center">${bar}${eur(r.ben)}</span></td><td class="${r.ben<0?'neg':''}">${pf(r.ben/r.v*100)}</td></tr>`;
+  });
+  h += `</tbody>`;
+  document.getElementById('t-esc').innerHTML = h;
+  const be = calc(l).be;
+  document.getElementById('esc-note').textContent = `${l.name} empieza a ganar dinero a partir de ${eur(be)} de venta en octubre (${sg((be/l.oct25-1)*100)} sobre octubre 2025 y ${sg((be/l.sep26-1)*100)} sobre septiembre 2026). Cada 1.000 € de venta de más dejan unos ${eur(1000*(1-M/100-l.delivPct))} de beneficio.`;
+}
+
+/* ---------- Compras ---------- */
+function renderComp(){
+  const tgb = LOCS.filter(l=>l.prov);
+  const all = LOCS;
+  tabs(document.getElementById('tabs-comp'), compSel, id=>{compSel=id; renderComp();}, all);
+  const l = LOCS.find(x=>x.id===compSel);
+  const r = calc(l);
+  document.getElementById('h-comp').textContent = `Mercadería al ${pf(M,M%1?1:0)}: cuánto se puede comprar`;
+  // bridge
+  const br = document.getElementById('bridge'), bn = document.getElementById('bridge-n');
+  if(l.teor){
+    const ace = l.ext.aceite, resto = Math.max(M - l.teor - ace, 0);
+    const segs = [['Receta (coste teórico de lo vendido)', l.teor, 'var(--accent)'],['Aceite de freír por encima de la receta', ace, 'var(--s4)'],['Margen para personal, merma y roturas', resto, 'var(--axis)']];
+    br.innerHTML = segs.map(s=>`<div class="row"><span>${s[0]}</span><strong>${pf(s[1])}</strong></div><div class="seg" style="width:${s[1]/M*100}%;background:${s[2]}"></div>`).join('') + `<div class="row" style="border-top:1px solid var(--line);padding-top:6px"><strong>Objetivo</strong><strong>${pf(M,M%1?1:0)}</strong></div>`;
+    bn.textContent = resto < 1 ? 'Con este objetivo casi no queda holgura sobre la receta: cualquier merma lo rompe.' : `La receta ya está calculada con lo que se vende, así que el 31 % es alcanzable si la compra se ajusta al consumo. En septiembre el consumo real fue ${l.id==='antiguo'?'36 %':l.id==='zurriola'?'29,5 %':'42,3 %'} sin contar el 5º camión.`;
+    document.getElementById('bridge-t').textContent = 'De la receta al objetivo';
+  } else {
+    br.innerHTML = `<div class="row"><span>Mercadería real ene–ago sin la "compensación 35 %"</span><strong>≈ 29–31 %</strong></div><div class="row"><span>Objetivo</span><strong>${pf(M,M%1?1:0)}</strong></div>`;
+    bn.textContent = 'POLKA no tiene coste teórico por receta. Con las compras reales de abril, julio y agosto ya estaba entre el 28 % y el 31 %, así que el 31 % es un objetivo realista si se deja de añadir la compensación manual.';
+    document.getElementById('bridge-t').textContent = 'Dónde está POLKA';
+  }
+  // table
+  let h;
+  const call = document.getElementById('comp-call');
+  if(l.prov){
+    const totSep = l.prov.reduce((a,p)=>a+p[2],0);
+    const lines = l.prov.map((p,i)=>{ const base = r.merc*p[2]/totSep; const st = (l.stock&&l.stock[i])||0; return {n:p[0], who:p[1], m:Math.max(base-st,0), st}; });
+    h = `<thead><tr><th>Proveedor</th><th>Pide</th><th>Mes</th>${WEEKS.map(w=>`<th title="${w[1]}">${w[0]}</th>`).join('')}</tr></thead><tbody>`;
+    lines.forEach(x=>{ h += `<tr><td>${x.n}</td><td style="text-align:left">${x.who}</td><td><strong>${eur(x.m)}</strong>${x.st?` <span class="pct">−${eur(x.st)} stock</span>`:''}</td>${WEEKS.map(w=>`<td>${eur(x.m*w[2]/OCT_DAYS)}</td>`).join('')}</tr>`; });
+    const T = lines.reduce((a,x)=>a+x.m,0);
+    h += `<tr class="tot"><td>Total compras</td><td></td><td>${eur(T)} <span class="pct">${pf(T/r.v*100)}</span></td>${WEEKS.map(w=>`<td>${eur(T*w[2]/OCT_DAYS)}</td>`).join('')}</tr></tbody>`;
+    if(l.stock){ call.hidden=false; call.innerHTML = `<b>Ballonti tiene stock de sobra en cámara</b> (unas 22 cajas de hamburguesa y 342 litros de cerveza a 30/09). El consumo del mes puede llegar al ${pf(M,M%1?1:0)}, pero la compra tiene que ser menor: he restado unos 2.700 € de Logirest y 400 € de Heineken. Por eso la compra sale al ${pf(T/r.v*100)}.`; }
+    else if(l.id==='antiguo'){ call.hidden=false; call.innerHTML = `<b>Antiguo compró en septiembre un 36 % sin el 5º camión</b>, con 6,6 puntos sin explicar por la receta. Para llegar al ${pf(M,M%1?1:0)} la compra semanal tiene que bajar unos ${eur((0.36-M/100)*r.v/OCT_DAYS*7)} respecto al ritmo de septiembre. Un inventario a fin de octubre dirá si es stock o merma.`; }
+    else { call.hidden=true; }
+  } else {
+    h = `<thead><tr><th>Concepto</th><th>Mes</th>${WEEKS.map(w=>`<th title="${w[1]}">${w[0]}</th>`).join('')}</tr></thead><tbody><tr class="tot"><td>Compras de comida y bebida</td><td>${eur(r.merc)}</td>${WEEKS.map(w=>`<td>${eur(r.merc*w[2]/OCT_DAYS)}</td>`).join('')}</tr></tbody>`;
+    call.hidden=false; call.innerHTML = '<b>En POLKA no tengo el reparto por proveedor</b> de septiembre. Con la hoja PROVEEDORES de su cuenta de septiembre puedo repartir este límite igual que en los TGB.';
+  }
+  document.getElementById('t-comp').innerHTML = h;
+}
+
+/* ---------- Familias ---------- */
+function renderFam(){
+  const tg = LOCS.filter(l=>FAMS[l.id]);
+  const names = Object.keys(FAMS.zurriola);
+  const R = Object.fromEntries(tg.map(l=>[l.id, calc(l).v]));
+  let h = `<thead><tr><th>Familia</th>${tg.map(l=>`<th><span class="dot" style="background:var(${l.slot})"></span>${l.name}</th>`).join('')}</tr></thead><tbody>`;
+  names.forEach(n=>{
+    h += `<tr><td>${n}</td>${tg.map(l=>{const p=FAMS[l.id][n]; const v=R[l.id]*p/100; return `<td class="${p<0?'neg':''}">${eur(v)} <span class="pct">${pf(p)}</span></td>`;}).join('')}</tr>`;
+  });
+  h += `<tr class="tot"><td>Venta presupuesto</td>${tg.map(l=>`<td>${eur(R[l.id])}</td>`).join('')}</tr>`;
+  h += `<tr><td class="lab2">Por semana (7 días)</td>${tg.map(l=>`<td class="lab2">${eur(R[l.id]/OCT_DAYS*7)}</td>`).join('')}</tr></tbody>`;
+  document.getElementById('t-fam').innerHTML = h;
+}
+
+function renderAll(focusId){
+  document.getElementById('g-o').textContent = sg(G);
+  document.getElementById('m-o').textContent = pf(M, M%1?1:0);
+  renderKpis(); renderPL(); renderEsc(); renderComp(); renderFam();
+  if(focusId){ const el = document.getElementById(focusId); if(el) el.focus(); }
+}
+document.getElementById('g').addEventListener('input', e=>{ G = +e.target.value; renderAll(); });
+document.getElementById('m').addEventListener('input', e=>{ M = +e.target.value; renderAll(); });
+document.getElementById('reset').addEventListener('click', ()=>{
+  G=5; M=31; document.getElementById('g').value=5; document.getElementById('m').value=31;
+  LOCS.forEach((l,i)=>l.c = JSON.parse(JSON.stringify(DEF[i])));
+  renderAll();
+});
+renderAll();
+</script>
